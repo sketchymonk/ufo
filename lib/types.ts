@@ -9,7 +9,8 @@ export type Agency =
   | 'USAF'
   | 'INDOPACOM'
   | 'CIA'
-  | 'DIA';
+  | 'DIA'
+  | 'DOS';
 
 export type RecordType = 'PHOTO' | 'VIDEO' | 'REPORT' | 'COMPOSITE' | 'ARCHIVAL' | 'DOCUMENT';
 
@@ -39,6 +40,11 @@ export interface UFORecord {
   classificationMarkings?: string[];
   redactedSectionCount?: number;
   tags?: string[];
+  downloadUrls?: string[];
+  sectionCount?: number;
+  videoUrl?: string;
+  imageUrls?: string[];
+  localFilename?: string;
 }
 
 export interface RecordsData {

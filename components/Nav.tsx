@@ -6,8 +6,10 @@ const links = [
   { href: '/',         label: 'Overview' },
   { href: '/records',  label: 'Records' },
   { href: '/gallery',  label: 'Gallery' },
+  { href: '/videos',   label: 'Videos' },
   { href: '/map',      label: 'Map' },
   { href: '/timeline', label: 'Timeline' },
+  { href: '/stats',    label: 'Stats' },
 ];
 
 export default function Nav() {

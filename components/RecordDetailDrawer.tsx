@@ -1,6 +1,7 @@
 'use client';
+import { useState } from 'react';
 import type { UFORecord } from '@/lib/types';
-import { agencyLabel, agencyColor, classificationLabel, classificationColor, formatDate, typeLabel } from '@/lib/utils';
+import { agencyLabel, agencyColor, formatDate, typeLabel } from '@/lib/utils';
 import ClassificationBadge from './ClassificationBadge';
 
 interface Props {
@@ -22,6 +23,8 @@ function MetaRow({ label, value }: { label: string; value: React.ReactNode }) {
 }
 
 export default function RecordDetailDrawer({ record, onClose }: Props) {
+  const [activePdfUrl, setActivePdfUrl] = useState(record.downloadUrl);
+
   return (
     <div
       style={{
@@ -212,6 +215,128 @@ export default function RecordDetailDrawer({ record, onClose }: Props) {
             </div>
           </div>
         )}
+
+        {/* Video player */}
+        {record.videoUrl && (
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontFamily: 'monospace', fontSize: '0.6rem', color: '#3d4f60', letterSpacing: '0.1em', marginBottom: 8 }}>
+              VIDEO FOOTAGE
+            </div>
+            {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+            <video
+              controls
+              style={{ width: '100%', borderRadius: 2, border: '1px solid #1e2a3a', background: '#080b10', display: 'block' }}
+              src={record.videoUrl}
+            />
+          </div>
+        )}
+
+        {/* Sensor images */}
+        {record.imageUrls && record.imageUrls.length > 0 && (
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontFamily: 'monospace', fontSize: '0.6rem', color: '#3d4f60', letterSpacing: '0.1em', marginBottom: 8 }}>
+              SENSOR IMAGERY
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {record.imageUrls.map((url, i) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={i}
+                  src={url}
+                  alt={`Image ${i + 1}`}
+                  style={{ width: '100%', borderRadius: 2, border: '1px solid #1e2a3a' }}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* PDF document — link to open, not iframe (X-Frame-Options blocks embed) */}
+        {activePdfUrl && !record.videoUrl && (
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontFamily: 'monospace', fontSize: '0.6rem', color: '#3d4f60', letterSpacing: '0.1em', marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>DOCUMENT</span>
+              {record.sectionCount && record.sectionCount > 1 && (
+                <span style={{ color: '#d97706' }}>{record.sectionCount} SECTIONS</span>
+              )}
+            </div>
+            {/* Section selector for multi-section records */}
+            {record.downloadUrls && record.downloadUrls.length > 1 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 8 }}>
+                {record.downloadUrls.map((url, i) => (
+                  <button
+                    key={url}
+                    onClick={() => setActivePdfUrl(url)}
+                    style={{
+                      fontFamily: 'monospace',
+                      fontSize: '0.6rem',
+                      padding: '2px 8px',
+                      border: `1px solid ${activePdfUrl === url ? '#d97706' : '#1e2a3a'}`,
+                      color: activePdfUrl === url ? '#d97706' : '#6b7d91',
+                      background: activePdfUrl === url ? 'rgba(217,119,6,0.08)' : '#111827',
+                      borderRadius: 1,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    §{i + 1}
+                  </button>
+                ))}
+              </div>
+            )}
+            <a
+              href={activePdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '10px 12px',
+                border: '1px solid #1e2a3a',
+                borderRadius: 2,
+                background: '#080b10',
+                fontFamily: 'monospace',
+                fontSize: '0.68rem',
+                color: '#6b7d91',
+                textDecoration: 'none',
+              }}
+            >
+              <span style={{ color: '#d97706', fontSize: '1rem' }}>📄</span>
+              <span>Open PDF in new tab ↗</span>
+            </a>
+          </div>
+        )}
+
+        {/* Extracted text */}
+        {record.pdfText && (
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontFamily: 'monospace', fontSize: '0.6rem', color: '#3d4f60', letterSpacing: '0.1em', marginBottom: 8, display: 'flex', justifyContent: 'space-between' }}>
+              <span>EXTRACTED TEXT</span>
+              {record.redactedSectionCount != null && record.redactedSectionCount > 0 && (
+                <span style={{ color: '#c41e3a' }}>{record.redactedSectionCount} REDACTED</span>
+              )}
+            </div>
+            <pre
+              style={{
+                fontFamily: 'monospace',
+                fontSize: '0.62rem',
+                color: '#8b9cb0',
+                background: '#050508',
+                border: '1px solid #1e2a3a',
+                borderRadius: 2,
+                padding: '10px 12px',
+                maxHeight: 220,
+                overflowY: 'auto',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+                margin: 0,
+                lineHeight: 1.6,
+              }}
+            >
+              {record.pdfText}
+            </pre>
+          </div>
+        )}
       </div>
 
       {/* Actions */}
@@ -223,11 +348,12 @@ export default function RecordDetailDrawer({ record, onClose }: Props) {
           gap: 8,
         }}
       >
-        {record.downloadUrl ? (
+        {(record.downloadUrl || record.videoUrl || (record.imageUrls && record.imageUrls.length > 0)) ? (
           <a
-            href={record.downloadUrl}
+            href={record.downloadUrl ?? record.videoUrl ?? record.imageUrls?.[0] ?? '#'}
             target="_blank"
             rel="noopener noreferrer"
+            download
             style={{
               flex: 1,
               background: '#d97706',

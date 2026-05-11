@@ -17,6 +17,7 @@ export function agencyLabel(agency: Agency): string {
     INDOPACOM: 'INDOPACOM',
     CIA: 'CIA',
     DIA: 'DIA',
+    DOS: 'Dept. of State',
   };
   return map[agency] ?? agency;
 }
@@ -34,6 +35,7 @@ export function agencyColor(agency: Agency): string {
     INDOPACOM: '#0f766e',
     CIA: '#9f1239',
     DIA: '#6b21a8',
+    DOS: '#be185d',
   };
   return map[agency] ?? '#6b7d91';
 }
@@ -63,7 +65,7 @@ export function classificationLabel(c: Classification): string {
 export function typeLabel(t: RecordType): string {
   const map: Record<RecordType, string> = {
     PHOTO: 'Photo',
-    VIDEO: 'Video Still',
+    VIDEO: 'Video',
     REPORT: 'Report',
     COMPOSITE: 'Composite',
     ARCHIVAL: 'Archival',
