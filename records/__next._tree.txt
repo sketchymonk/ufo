@@ -1,0 +1,2 @@
+:HL["/ufo/_next/static/chunks/0bve~.-~0.p_5.css","style"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"records","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"neG8qNUA62h6wmoy2Q8y1"}
